@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<form method="post" action="/api">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <div class="container">
+      <h2 id="text-center" >Enter Location</h2>
+      <form id="location-form">
+          <input type="text"  name="locationName" id="location-input" class="form-control form-control-lg">
+          <br>
+          <div  class="card-block" name="address"  id="formatted-address"> </div>
+          <div class="card-block" name="regions"  id="address-component"></div>
+          <div class="card-block"  name="geometry" id="geometry"></div>
+          <input type="hidden" name="responseObj" id="responseObj">
+      </form>
+
+      <button id="btnSubmit"  class="btn btn-primary btn-block">Submit </button>
+  </div>
+
+ <script>
+    // geocode()
+
+   /* var locationForm = document.getElementById('location-form')*/
+   /* var Api = require('../../models/user')*/
+ /*   var handleEvents = document.getElementById('btnSubmit');
+    handleEvents.addEventListener('click', getQuery);
+    function getQuery(e) {
+        e.preventDefault();
+        var responseObj = resArr
+        var locatonobj = {}
+        locatonobj.placeName = responseObj.data.results[0].formatted_address;
+        locatonobj.political =  responseObj.data.results[0].address_components[0].long_name || "N/A";
+        locatonobj.areaOne =  responseObj.data.results[0].address_components[1].long_name  || "N/A";
+        locatonobj.areaTwo =  responseObj.data.results[0].address_components[2].long_name  || "N/A";
+        locatonobj.country = responseObj.data.results[0].address_components[2].long_name  || "N/A";
+        locatonobj.latitude = responseObj.data.results[0].geometry.location.lat  || "N/A";
+        locatonobj.lalongitude =  responseObj.data.results[0].geometry.location.lng || "N/A" ;
+        var ApiData = new Api({
+            placeName : locatonobj.placeName,
+            political :locatonobj.political,
+            areaOne: locatonobj.areaOne,
+            areaTwo : locatonobj.areaTwo,
+            country :locatonobj.country,
+            latitude : locatonobj.latitude,
+            lalongitude : locatonobj.lalongitude
+        })
+        Api.save(ApiData)
+    }*/
+    var buttonCLick = document.getElementById('location-input')
+    buttonCLick.addEventListener('keyup', geocode)
+     function geocode(e){
+         e.preventDefault();
+         var location = document.getElementById('location-input').value;
+              axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+                  params : {
+                      address :location,
+                      key : "AIzaSyCIxWqNQFBiOXlakJ-JPnJVuFXpyIBQmlw"
+                  }
+              })
+              .then(function (response) {
+                  console.log(response)
+                  resArr = response
+
+                  var formattedAddress = response.data.results[0].formatted_address;
+                  var formattedAddressOutput = `<ul class="list-group">
+                   <li class="list-group-item" name="${formattedAddress}">${formattedAddress}</li>
+                   </ul>
+                  `;
+                  // Address Components
+
+                  var adressComponent =  response.data.results[0].address_components;
+                  var addressComponentOutput = `<ul class="list-group">`
+
+                  for(var i=0; i< adressComponent.length; i++){
+                      addressComponentOutput +=`
+                      <li class="list-group-item" name="${adressComponent[i].long_name}"><strong>${adressComponent[i].types[0]}
+                      </strong>: ${adressComponent[i].long_name}</li>` ;
+                  }
+                  addressComponentOutput += `</ul>`
+
+
+                  var lat = response.data.results[0].geometry.location.lat
+                  var lng = response.data.results[0].geometry.location.lng;
+                  var geometryOutput = `<ul class="list-group">
+                   <li class="list-group-item" name="lat"><strong>Latitude</strong>: ${lat}</li>
+                    <li class="list-group-item"  name="lat"><strong>Longitude</strong> ${lng}</li>
+                   </ul>
+                  `;
+
+                  document.getElementById('formatted-address').innerHTML = formattedAddressOutput
+                  document.getElementById('address-component').innerHTML = addressComponentOutput
+                  document.getElementById('geometry').innerHTML = geometryOutput
+
+              })
+              .catch(function (error) {
+                  console.log(error)
+              })
+     }
+ </script>
+</body>
+</html>
+</form>
